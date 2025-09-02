@@ -1,0 +1,73 @@
+Star vs. Mesh Topology
+When to use a Star topology
+        [PC]   [Printer]
+           \     /
+            \   /
+           [ Switch/AP ]
+            /   |   \
+        [PC] [IP Cam] [Laptop]
+
+
+Typical size: Small/medium LANs (homes, classrooms, offices).
+
+Why choose it: Simple to design and troubleshoot; easy to scale by adding a port; inexpensive.
+
+Performance: Each edge device gets a dedicated link to the central switch/AP.
+
+Trade-offs: The central device is a single point of failure (mitigate with stackable/dual switches or redundant uplinks).
+
+Great for: Home networks, SMB offices, labs, wired clients behind a single closet switch or a single wireless AP.
+
+When to use a Mesh topology
+ [Node A]———[Node B]
+    |\        /|
+    | \      / |
+    |  \    /  |
+ [Node D]———[Node C]
+
+
+Typical size: Medium/large environments requiring high availability and self-healing paths (campuses, warehouses, city-wide Wi-Fi, sensor/IoT networks).
+
+Why choose it: Redundancy & resilience—multiple paths; the network can reroute around failures.
+
+Performance: Excellent fault tolerance; can balance traffic across paths (with the right protocols).
+
+Trade-offs: Complexity & cost—more links/radios, more routing overhead, careful RF/channel planning for wireless mesh; full meshes scale poorly (links grow ~O(n²)).
+
+Great for: Outdoor wireless backhaul, mission-critical networks needing continuous uptime, distributed IoT where cabling is impractical.
+
+Quick rule of thumb
+
+Start with Star for simplicity and cost.
+
+Move to (Partial) Mesh where redundancy, coverage, or no single point of failure is mandatory.
+
+| Aspect                | Switch                                                                                Router                                                           |
+| --------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Primary role          | Connect devices within the same network/LAN                                     | Connect different networks (LAN to LAN/WAN/Internet)              |
+| OSI focus             | Layer 2 (Ethernet/MAC). Some are multilayer (L3)                                | Layer 3 (IP) and above features                                      |
+| Forwarding basis      | MAC address table (learns source MACs, forwards to correct port)                | Routing table (longest-prefix match on IP)                       |
+| Broadcast behavior    | One broadcast domain per VLAN; floods unknown unicast/broadcast within VLAN     | Stops broadcasts; doesn’t forward L2 broadcasts between networks |
+| Segmentation          | VLANs split a switch into multiple L2 segments                                  | Inter-VLAN routing between those segments                        |
+| Default gateway       | Not needed for pure L2 switching                                                | Acts as the default gateway between networks                     |
+| NAT & Internet access | Not typical (except on L3/Multi-layer with limited features)                    | NAT/PAT to share public IPs; Internet edge role                  |
+| DHCP                  | Often DHCP relay; some smart switches have basic DHCP                           | Frequently DHCP server for LANs                                  |
+| Security              | Port security, 802.1X, VLAN ACLs                                                | ACLs, policy-based routing, firewall features, VPN                   |
+| Ports/links           | Many Ethernet access ports                                                      | Fewer LAN ports; WAN interfaces (Ethernet, fiber, cellular)      |
+
+
+Decision guide
+
+Need to add more clients on the same subnet with fast local switching? - Switch.
+
+Need to reach another subnet, route between VLANs, or reach the Internet with NAT? - Router (or an L3 switch configured for routing).
+
+Note: Layer-3 (multilayer) switches blur the line—they switch at L2 and route between VLANs at line-rate. Use them inside campuses; keep a traditional router/firewall at the WAN/Internet edge for NAT, advanced security, and VPN.
+
+Practical examples
+
+Home/Small Office: Star topology: ISP modem/router to switch/AP to PCs/printers. Router does DHCP + NAT; switch/AP provides local connectivity.
+
+Warehouse Wi-Fi: Partial mesh between APs to cover long aisles; controller or mesh protocols handle rerouting if a link drops.
+
+Campus Core: Access switches in star to the distribution/core; L3 switching for inter-VLAN routing; redundant links forming a partial mesh at the core for high availability.
